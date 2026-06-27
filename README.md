@@ -10,8 +10,9 @@ Captures, every Sunday at 05:00:
 - A curated subset of `~/Library/Biome/streams` — the modern cross-device event
   data (app focus, activity, media/web usage, now-playing, wifi/bluetooth).
 
-Backups land in `~/Documents/ScreenTimeBackups/` (gzipped); the run log is
-`~/Library/Logs/screentime-backup.log`.
+Backups land in a dated folder per run — `~/Documents/ScreenTimeBackups/<YYYY-MM-DD>/`
+(e.g. `2026-06-27/knowledgeC.db.gz`, `rmadmin-local.db.gz`, `rmadmin-cloud.db.gz`,
+`biome-streams.tar.gz`). The run log is `~/Library/Logs/screentime-backup.log`.
 
 ## Layout
 

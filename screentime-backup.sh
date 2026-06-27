@@ -10,9 +10,11 @@ SOURCE_DB="$HOME/Library/Application Support/Knowledge/knowledgeC.db"
 LOG_FILE="$HOME/Library/Logs/screentime-backup.log"
 DATE="$(/bin/date +%Y-%m-%d)"
 TS="$(/bin/date '+%Y-%m-%d %H:%M:%S')"
-DEST="$BACKUP_DIR/knowledgeC-${DATE}.db"
+# One folder per run, named by date; filenames drop the (now-redundant) date.
+RUN_DIR="$BACKUP_DIR/${DATE}"
+DEST="$RUN_DIR/knowledgeC.db"
 
-mkdir -p "$BACKUP_DIR" "$(/usr/bin/dirname "$LOG_FILE")"
+mkdir -p "$RUN_DIR" "$(/usr/bin/dirname "$LOG_FILE")"
 
 log() { print -r -- "[$(/bin/date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"; }
 
@@ -35,6 +37,7 @@ fi
 
 # Online consistent snapshot of the live SQLite DB (handles WAL correctly).
 if /usr/bin/sqlite3 "$SOURCE_DB" ".backup '$DEST'"; then
+  /bin/rm -f "${DEST}-wal" "${DEST}-shm"  # drop WAL/SHM sidecars left beside the .backup copy
   /usr/bin/gzip -f "$DEST"
   SIZE=$(/usr/bin/du -h "${DEST}.gz" | /usr/bin/awk '{print $1}')
   log "backup OK: ${DEST}.gz (${SIZE})"
@@ -51,7 +54,7 @@ ST_STORE="${USER_DIR}com.apple.ScreenTimeAgent/Store"
 
 for VARIANT in Local Cloud; do
   SRC="${ST_STORE}/RMAdminStore-${VARIANT}.sqlite"
-  DST="$BACKUP_DIR/rmadmin-$(/usr/bin/tr '[:upper:]' '[:lower:]' <<<"$VARIANT")-${DATE}.db"
+  DST="$RUN_DIR/rmadmin-$(/usr/bin/tr '[:upper:]' '[:lower:]' <<<"$VARIANT").db"
   if [[ ! -r "$SRC" ]]; then
     log "WARN: ${VARIANT} store not readable at $SRC — skipping"
     continue
@@ -70,7 +73,7 @@ done
 # append-only SEGB binary log files. We capture a curated 'Screen Time'-shaped
 # subset; full ~/Library/Biome/streams is ~1GB and mostly Siri analytics noise.
 BIOME_STREAMS="$HOME/Library/Biome/streams/restricted"
-BIOME_OUT="$BACKUP_DIR/biome-streams-${DATE}.tar.gz"
+BIOME_OUT="$RUN_DIR/biome-streams.tar.gz"
 CURATED_STREAMS=(
   App.InFocus
   App.Activity
