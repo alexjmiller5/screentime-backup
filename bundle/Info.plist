@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.alexmiller.screentime-backup</string>
+
+    <key>CFBundleName</key>
+    <string>ScreenTimeBackup</string>
+
+    <key>CFBundleDisplayName</key>
+    <string>Screen Time Backup</string>
+
+    <!-- The main executable IS the backup script (Contents/MacOS/screentime-backup),
+         copied from the repo's screentime-backup.sh by `just install`. -->
+    <key>CFBundleExecutable</key>
+    <string>screentime-backup</string>
+
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>CFBundleSignature</key>
+    <string>????</string>
+
+    <key>CFBundleVersion</key>
+    <string>1</string>
+
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <!-- Background helper: no Dock icon, no menu bar. -->
+    <key>LSUIElement</key>
+    <true/>
+
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+</dict>
+</plist>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.alexmiller.screentime-backup</string>
+
+    <!-- Invoke the binary inside the .app bundle so TCC associates the read
+         with the bundle identifier (Full Disk Access is granted to the .app). -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/alexmiller/Applications/ScreenTimeBackup.app/Contents/MacOS/screentime-backup</string>
+    </array>
+
+    <!-- Every Sunday at 05:00, anchored to wall-clock time. Unlike StartInterval,
+         a missed slot (Mac asleep/off) fires once on the next wake instead of
+         silently drifting the next run a full week out. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>0</integer>
+        <key>Hour</key>
+        <integer>5</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- Run once when the agent is first loaded so we get an immediate baseline. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/alexmiller/Library/Logs/screentime-backup.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/alexmiller/Library/Logs/screentime-backup.log</string>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>
