@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-BACKUP_DIR="$HOME/Documents/ScreenTimeBackups"
+BACKUP_DIR="$HOME/Documents/screen-time-backups"
 SOURCE_DB="$HOME/Library/Application Support/Knowledge/knowledgeC.db"
 LOG_FILE="$HOME/Library/Logs/screentime-backup.log"
 DATE="$(/bin/date +%Y-%m-%d)"

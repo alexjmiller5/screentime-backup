@@ -71,4 +71,4 @@ uninstall:
     launchctl bootout "gui/$uid/{{label}}" 2>/dev/null || true
     rm -f "{{plist_dst}}"
     rm -rf "{{app}}"
-    echo "Uninstalled. Backups (~/Documents/ScreenTimeBackups) and the log are untouched."
+    echo "Uninstalled. Backups (~/Documents/screen-time-backups) and the log are untouched."
