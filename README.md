@@ -5,14 +5,19 @@ Weekly local snapshots of macOS Screen Time data, run by a `launchd` LaunchAgent
 Captures, every Sunday at 05:00:
 
 - `knowledgeC.db` — the legacy Screen Time / device-activity store.
-- `RMAdminStore-{Local,Cloud}.sqlite` — ScreenTimeAgent's per-app/device
-  aggregation, including data synced from iPhone via *Share Across Devices*.
+- `RMAdminStore-{Local,Cloud}.sqlite` — ScreenTimeAgent's device/settings
+  registry (usage tables are unused on current macOS).
+- `device-activity.tar.gz` — ScreenTimeAgent's DeviceActivity summaries: per-device
+  Daily/Hourly/Weekly plists with total screen time (incl. home-screen dwell),
+  per-app durations, pickups, notification counts, and web-domain usage. This is
+  what Settings → Screen Time renders for *Share Across Devices* data; Apple only
+  retains ~4 weeks, so these snapshots preserve history.
 - A curated subset of `~/Library/Biome/streams` — the modern cross-device event
   data (app focus, activity, media/web usage, now-playing, wifi/bluetooth).
 
 Backups land in a dated folder per run — `~/Documents/screen-time-backups/<YYYY-MM-DD>/`
 (e.g. `2026-06-27/knowledgeC.db.gz`, `rmadmin-local.db.gz`, `rmadmin-cloud.db.gz`,
-`biome-streams.tar.gz`). The run log is `~/Library/Logs/screentime-backup.log`.
+`device-activity.tar.gz`, `biome-streams.tar.gz`). The run log is `~/Library/Logs/screentime-backup.log`.
 
 ## Layout
 

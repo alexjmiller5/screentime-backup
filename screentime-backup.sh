@@ -68,6 +68,24 @@ for VARIANT in Local Cloud; do
   fi
 done
 
+# DeviceActivity summaries — Apple's official per-device usage rollups (Daily/
+# Hourly/Weekly plists): total screen time incl. home-screen dwell, per-app
+# durations, pickups, notification counts, and web-domain usage. This is the
+# data the Settings → Screen Time pane renders; retention is only ~4 weeks,
+# so the weekly snapshot is what preserves history.
+DA_DIR="${ST_STORE}/Library/com.apple.DeviceActivity"
+DA_OUT="$RUN_DIR/device-activity.tar.gz"
+if [[ -d "$DA_DIR" ]]; then
+  if /usr/bin/tar -czf "$DA_OUT" -C "${ST_STORE}/Library" com.apple.DeviceActivity 2>/dev/null; then
+    SIZE=$(/usr/bin/du -h "$DA_OUT" | /usr/bin/awk '{print $1}')
+    log "backup OK: $DA_OUT ($SIZE)"
+  else
+    log "ERROR: tar failed for device activity"
+  fi
+else
+  log "WARN: DeviceActivity dir not found at $DA_DIR, skipping"
+fi
+
 # Biome streams — the actual modern home of cross-device event data. Each stream
 # has local/ (Mac) and remote/<device-uuid>/ (iPhone, Watch, etc.) subdirs of
 # append-only SEGB binary log files. We capture a curated 'Screen Time'-shaped
