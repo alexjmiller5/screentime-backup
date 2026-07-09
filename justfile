@@ -12,7 +12,7 @@ log        := "/Users/alexmiller/Library/Logs/screentime-backup.log"
 # Sign with this identity so TCC matches the grant by certificate (stable across
 # edits) rather than by content hash. Re-signing an edited script with the same
 # cert keeps Full Disk Access. `security find-identity -v -p codesigning` to list.
-signing_id := "Apple Development: redacted-usr@gmail.com (REDACTED)"
+signing_id := `security find-identity -v -p codesigning | awk -F'"' '/REDACTED/{print $2; exit}'`
 
 # List available recipes.
 default:
