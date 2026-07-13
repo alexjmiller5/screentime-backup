@@ -15,11 +15,26 @@ let
   signingIdentity = "screentime-backup-signing";
   appInstallPath = "/Applications/ScreenTimeBackup.app";
 
-  appBundle = pkgs.runCommand "screentime-backup-app" { } ''
+  script = pkgs.writeScript "screentime-backup.sh" (builtins.readFile ../screentime-backup.sh);
+
+  # TCC evaluates the grant's designated requirement against the PROCESS's main
+  # executable. A shebang script as CFBundleExecutable runs as /bin/zsh, which
+  # fails that check — grant recorded, access still denied (hit on the mini;
+  # `just install` on a MacBook tolerates it, macOS 26 does not). So the bundle
+  # executable is a tiny signed Mach-O that execs the store script; FDA
+  # inherits across the exec (same mechanism as notion-finance-sync).
+  appBundle = pkgs.runCommandCC "screentime-backup-app" { } ''
     mkdir -p "$out/Contents/MacOS"
     cp ${../bundle/Info.plist} "$out/Contents/Info.plist"
-    cp ${../screentime-backup.sh} "$out/Contents/MacOS/screentime-backup"
-    chmod +x "$out/Contents/MacOS/screentime-backup"
+    cat > stub.c <<EOF
+    #include <unistd.h>
+    int main(int argc, char **argv) {
+      argv[0] = (char *)"${script}";
+      execv("${script}", argv);
+      return 127;
+    }
+    EOF
+    $CC -O2 -o "$out/Contents/MacOS/screentime-backup" stub.c
   '';
 in
 {
