@@ -11,8 +11,10 @@ plist_dst  := "/Users/alexmiller/Library/LaunchAgents/com.alexmiller.screentime-
 log        := "/Users/alexmiller/Library/Logs/screentime-backup.log"
 # Sign with this identity so TCC matches the grant by certificate (stable across
 # edits) rather than by content hash. Re-signing an edited script with the same
-# cert keeps Full Disk Access. `security find-identity -v -p codesigning` to list.
-signing_id := `security find-identity -v -p codesigning | awk -F'"' '/REDACTED/{print $2; exit}'`
+# cert keeps Full Disk Access. Picks the first Apple Development identity; set
+# SIGNING_ID to override if you have several teams
+# (`security find-identity -v -p codesigning` to list).
+signing_id := env("SIGNING_ID", `security find-identity -v -p codesigning | awk -F'"' '/Apple Development/{print $2; exit}'`)
 
 # List available recipes.
 default:

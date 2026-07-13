@@ -79,3 +79,29 @@ Full Disk Access cannot be granted programmatically (Apple blocks it). After the
 `StartInterval`, a slot missed while the Mac is asleep/off fires once on the next
 wake instead of silently drifting a full week out. To change the cadence, edit
 `com.alexmiller.screentime-backup.plist` and re-run `just install`.
+
+## Declarative install (nix-darwin)
+
+The repo is also a flake exposing `darwinModules.default` — the same .app +
+LaunchAgent, but built by `darwin-rebuild switch` instead of `just install`.
+This is how it runs on the mac mini (consumed by
+[nix-config](https://github.com/alexjmiller5/nix-config) as a flake input):
+
+```nix
+# flake input
+screentime-backup.url = "github:alexjmiller5/screentime-backup";
+
+# module config
+services.screentime-backup = {
+  enable = true;
+  user = "alexmiller";
+  # weekday = 0; hour = 5; minute = 0;   # defaults: Sunday 05:00
+};
+```
+
+Activation creates a stable self-signed signing cert once (no Apple Development
+cert needed on a headless box), installs `/Applications/ScreenTimeBackup.app`,
+and re-signs it with that same cert every rebuild — so the one-time FDA grant
+(same steps as above, but on `/Applications/...`) persists across updates.
+Trigger/verify: `launchctl kickstart -k gui/$(id -u)/com.alexmiller.screentime-backup`,
+then check `~/Library/Logs/screentime-backup.log`.
