@@ -15,6 +15,11 @@ Captures, every Sunday at 05:00:
 - A curated subset of `~/Library/Biome/streams` — the modern cross-device event
   data (app focus, activity, media/web usage, now-playing, wifi/bluetooth).
 
+> **macOS ≥ 26.3:** Apple vaulted the ScreenTimeAgent store beyond Full Disk
+> Access — the `RMAdminStore-*` and DeviceActivity captures are warn-skipped
+> (verified on 26.3: even FDA processes get EPERM on the store directory;
+> 26.1 still allows it). knowledgeC and the Biome streams remain readable.
+
 Backups land in a dated folder per run — `~/Documents/screen-time-backups/<YYYY-MM-DD>/`
 (e.g. `2026-06-27/knowledgeC.db.gz`, `rmadmin-local.db.gz`, `rmadmin-cloud.db.gz`,
 `device-activity.tar.gz`, `biome-streams.tar.gz`). The run log is `~/Library/Logs/screentime-backup.log`.
