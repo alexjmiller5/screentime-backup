@@ -64,6 +64,17 @@ in
       default = 0;
       description = "Minute the backup fires.";
     };
+
+    dirSuffix = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      example = "-macbook";
+      description = ''
+        Suffix appended to each run's date-named folder. Set a distinct value
+        per machine when several Macs back up into the same (iCloud-synced)
+        folder, so same-day runs don't collide.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -92,6 +103,9 @@ in
       serviceConfig = {
         Label = label;
         ProgramArguments = [ "${appInstallPath}/Contents/MacOS/screentime-backup" ];
+        EnvironmentVariables = lib.mkIf (cfg.dirSuffix != "") {
+          STB_DIR_SUFFIX = cfg.dirSuffix;
+        };
         # Wall-clock anchored; a slot missed while asleep/off fires once on wake.
         StartCalendarInterval = [ { Weekday = cfg.weekday; Hour = cfg.hour; Minute = cfg.minute; } ];
         RunAtLoad = false;

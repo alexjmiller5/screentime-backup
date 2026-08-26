@@ -11,7 +11,9 @@ LOG_FILE="$HOME/Library/Logs/screentime-backup.log"
 DATE="$(/bin/date +%Y-%m-%d)"
 TS="$(/bin/date '+%Y-%m-%d %H:%M:%S')"
 # One folder per run, named by date; filenames drop the (now-redundant) date.
-RUN_DIR="$BACKUP_DIR/${DATE}"
+# STB_DIR_SUFFIX (e.g. "-macbook") keeps multiple machines writing into the
+# same iCloud-synced BACKUP_DIR from colliding on a same-day run.
+RUN_DIR="$BACKUP_DIR/${DATE}${STB_DIR_SUFFIX:-}"
 DEST="$RUN_DIR/knowledgeC.db"
 
 mkdir -p "$RUN_DIR" "$(/usr/bin/dirname "$LOG_FILE")"
