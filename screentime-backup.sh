@@ -123,4 +123,16 @@ else
   log "WARN: none of the curated biome streams exist, skipping"
 fi
 
+# Optional hook (STB_POST_RUN): a command to run once the snapshot is written,
+# under this process's Full Disk Access - e.g. a job that parses the new
+# snapshot and pushes derived data somewhere.
+if [[ -n "${STB_POST_RUN:-}" ]]; then
+  log "post-run: $STB_POST_RUN"
+  if /bin/sh -c "$STB_POST_RUN" >> "$LOG_FILE" 2>&1; then
+    log "post-run OK"
+  else
+    log "ERROR: post-run failed (rc=$?)"
+  fi
+fi
+
 log "=== run end ==="

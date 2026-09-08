@@ -65,6 +65,17 @@ in
       description = "Minute the backup fires.";
     };
 
+    postRun = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      example = "/run/current-system/sw/bin/screentime-ingest sync";
+      description = ''
+        Shell command run after each successful snapshot, inside the backup
+        process (so it inherits the app's Full Disk Access). Output goes to
+        the backup log. Empty = no hook.
+      '';
+    };
+
     dirSuffix = lib.mkOption {
       type = lib.types.str;
       default = "";
@@ -103,9 +114,9 @@ in
       serviceConfig = {
         Label = label;
         ProgramArguments = [ "${appInstallPath}/Contents/MacOS/screentime-backup" ];
-        EnvironmentVariables = lib.mkIf (cfg.dirSuffix != "") {
-          STB_DIR_SUFFIX = cfg.dirSuffix;
-        };
+        EnvironmentVariables =
+          lib.optionalAttrs (cfg.dirSuffix != "") { STB_DIR_SUFFIX = cfg.dirSuffix; }
+          // lib.optionalAttrs (cfg.postRun != "") { STB_POST_RUN = cfg.postRun; };
         # Wall-clock anchored; a slot missed while asleep/off fires once on wake.
         StartCalendarInterval = [ { Weekday = cfg.weekday; Hour = cfg.hour; Minute = cfg.minute; } ];
         RunAtLoad = false;

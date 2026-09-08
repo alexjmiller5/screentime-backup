@@ -101,8 +101,13 @@ services.screentime-backup = {
   enable = true;
   user = "alexmiller";
   # weekday = 0; hour = 5; minute = 0;   # defaults: Sunday 05:00
+  # postRun = "<command>";  # runs after each snapshot, with the app's FDA
 };
 ```
+
+`postRun` (env `STB_POST_RUN` for the `just install` path) runs a command once
+the snapshot is written - e.g. an ingest job that parses it and pushes derived
+data to a dashboard. It inherits the backup process's Full Disk Access.
 
 Activation creates a stable self-signed signing cert once (no Apple Development
 cert needed on a headless box), installs `/Applications/ScreenTimeBackup.app`,
