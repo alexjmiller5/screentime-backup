@@ -76,6 +76,17 @@ in
       '';
     };
 
+    skipDumpFlag = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      example = "/Users/alex/Library/Application Support/screentime-ingest/skip-dump";
+      description = ''
+        Path of a flag file: when it exists at run start, the agent takes no
+        snapshot and only runs postRun (the flag is consumed). Lets another
+        job reuse this app's Full Disk Access on demand. Empty = disabled.
+      '';
+    };
+
     dirSuffix = lib.mkOption {
       type = lib.types.str;
       default = "";
@@ -116,7 +127,8 @@ in
         ProgramArguments = [ "${appInstallPath}/Contents/MacOS/screentime-backup" ];
         EnvironmentVariables =
           lib.optionalAttrs (cfg.dirSuffix != "") { STB_DIR_SUFFIX = cfg.dirSuffix; }
-          // lib.optionalAttrs (cfg.postRun != "") { STB_POST_RUN = cfg.postRun; };
+          // lib.optionalAttrs (cfg.postRun != "") { STB_POST_RUN = cfg.postRun; }
+          // lib.optionalAttrs (cfg.skipDumpFlag != "") { STB_SKIP_DUMP_FLAG = cfg.skipDumpFlag; };
         # Wall-clock anchored; a slot missed while asleep/off fires once on wake.
         StartCalendarInterval = [ { Weekday = cfg.weekday; Hour = cfg.hour; Minute = cfg.minute; } ];
         RunAtLoad = false;

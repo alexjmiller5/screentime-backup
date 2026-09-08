@@ -20,7 +20,31 @@ mkdir -p "$RUN_DIR" "$(/usr/bin/dirname "$LOG_FILE")"
 
 log() { print -r -- "[$(/bin/date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"; }
 
+# Optional hook (STB_POST_RUN): a command to run once the snapshot is written,
+# under this process's Full Disk Access - e.g. a job that parses the new
+# snapshot and pushes derived data somewhere.
+post_run() {
+  [[ -n "${STB_POST_RUN:-}" ]] || return 0
+  log "post-run: $STB_POST_RUN"
+  if /bin/sh -c "$STB_POST_RUN" >> "$LOG_FILE" 2>&1; then
+    log "post-run OK"
+  else
+    log "ERROR: post-run failed (rc=$?)"
+  fi
+}
+
 log "=== run start ==="
+
+# STB_SKIP_DUMP_FLAG names a file whose presence means "run only the post-run
+# hook, take no new snapshot" - how a caller borrows this process's Full Disk
+# Access without waiting for a dump. Consumed (deleted) on use.
+if [[ -n "${STB_SKIP_DUMP_FLAG:-}" && -e "$STB_SKIP_DUMP_FLAG" ]]; then
+  /bin/rm -f "$STB_SKIP_DUMP_FLAG"
+  log "skip-dump flag present: post-run only"
+  post_run
+  log "=== run end ==="
+  exit 0
+fi
 
 if [[ ! -r "$SOURCE_DB" ]]; then
   log "ERROR: cannot read $SOURCE_DB — grant Full Disk Access to /bin/zsh and/or this script in System Settings → Privacy & Security."
@@ -123,16 +147,6 @@ else
   log "WARN: none of the curated biome streams exist, skipping"
 fi
 
-# Optional hook (STB_POST_RUN): a command to run once the snapshot is written,
-# under this process's Full Disk Access - e.g. a job that parses the new
-# snapshot and pushes derived data somewhere.
-if [[ -n "${STB_POST_RUN:-}" ]]; then
-  log "post-run: $STB_POST_RUN"
-  if /bin/sh -c "$STB_POST_RUN" >> "$LOG_FILE" 2>&1; then
-    log "post-run OK"
-  else
-    log "ERROR: post-run failed (rc=$?)"
-  fi
-fi
+post_run
 
 log "=== run end ==="

@@ -108,6 +108,10 @@ services.screentime-backup = {
 `postRun` (env `STB_POST_RUN` for the `just install` path) runs a command once
 the snapshot is written - e.g. an ingest job that parses it and pushes derived
 data to a dashboard. It inherits the backup process's Full Disk Access.
+`skipDumpFlag` (env `STB_SKIP_DUMP_FLAG`) names a file: if it exists when the
+agent starts, no snapshot is taken and only `postRun` runs (the file is
+deleted) - a caller `touch`es it and kickstarts the agent to run the hook
+under this app's Full Disk Access without a fresh dump.
 
 Activation creates a stable self-signed signing cert once (no Apple Development
 cert needed on a headless box), installs `/Applications/ScreenTimeBackup.app`,
